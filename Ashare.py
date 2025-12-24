@@ -1,7 +1,7 @@
 #-*- coding:utf-8 -*-    --------------Ashare 股票行情数据双核心版( https://github.com/mpquant/Ashare ) 
 import json,requests,datetime;      import pandas as pd  #
 
-#腾讯日线
+#---腾讯日线---  2025-12-21日正常使用
 def get_price_day_tx(code, end_date='', count=10, frequency='1d'):     #日线获取  
     unit='week' if frequency in '1w' else 'month' if frequency in '1M' else 'day'     #判断日线，周线，月线
     if end_date:  end_date=end_date.strftime('%Y-%m-%d') if isinstance(end_date,datetime.date) else end_date.split(' ')[0]
@@ -67,3 +67,4 @@ if __name__ == '__main__':
     print('上证指数分钟线\n',df)
 
 # Ashare 股票行情数据( https://github.com/mpquant/Ashare ) 
+
