@@ -14,9 +14,10 @@ This is a TypeScript port of the [Ashare Python library](https://github.com/mpqu
 - **Lightweight**: Minimal dependencies, only requires axios for HTTP requests
 
 ## Installation
+Tested with nodejs v18.19.1 and pnpm 9.11.0.
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## Usage
@@ -137,7 +138,7 @@ await getPrice('600519.XSHG');     // Kweichow Moutai
 
 ```bash
 # Demo 1: Basic usage
-npm run dev
+pnpm run dev
 
 # Demo 2: Advanced indicators
 npx ts-node Demo2.ts
@@ -147,13 +148,13 @@ npx ts-node Demo2.ts
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run tests in watch mode
-npm run test:watch
+pnpm run test:watch
 
 # Run tests with coverage
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 ## Project Structure
