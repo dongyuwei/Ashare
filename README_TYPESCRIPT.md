@@ -141,7 +141,7 @@ await getPrice('600519.XSHG');     // Kweichow Moutai
 pnpm run dev
 
 # Demo 2: Advanced indicators
-npx ts-node Demo2.ts
+pnpx ts-node Demo2.ts
 ```
 
 ## Running Tests

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ashare Charts - BOLL & TAQ Technical Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #58a6ff;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #8b949e;
+      margin-bottom: 30px;
+    }
+    
+    .chart-container {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #f0f6fc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .chart-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: #58a6ff;
+      border-radius: 2px;
+    }
+    
+    .chart {
+      width: 100%;
+      height: 500px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    label {
+      color: #8b949e;
+      font-size: 14px;
+    }
+    
+    select, input {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    
+    button:hover {
+      background: #2ea043;
+    }
+    
+    .info {
+      background: rgba(88, 166, 255, 0.1);
+      border-left: 4px solid #58a6ff;
+      padding: 15px;
+      margin-bottom: 30px;
+      border-radius: 0 6px 6px 0;
+    }
+    
+    .info h3 {
+      color: #58a6ff;
+      margin-bottom: 8px;
+    }
+    
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ashare Technical Analysis Charts</h1>
+    <p class="subtitle">BOLL (Bollinger Bands) & TAQ (Turtle Trading Channel)</p>
+    
+    <div class="info">
+      <h3>About This Demo</h3>
+      <p>This example uses Apache ECharts to visualize stock data with technical indicators. The BOLL chart shows Bollinger Bands (Upper, Middle, Lower), while the TAQ chart displays the Turtle Trading Channel.</p>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Stock Code:</label>
+        <select id="stockCode">
+          <option value="sh000001">上证指数 (000001)</option>
+          <option value="sh600519">贵州茅台 (600519)</option>
+          <option value="sz399006">创业板指 (399006)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Period:</label>
+        <input type="number" id="period" value="20" min="5" max="60" style="width: 60px;">
+        <label>days</label>
+      </div>
+      <div class="control-group">
+        <label>BOLL Multiplier:</label>
+        <input type="number" id="bollMultiplier" value="2" min="1" max="3" step="0.5" style="width: 60px;">
+      </div>
+      <button onclick="updateCharts()">Update Charts</button>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">BOLL (Bollinger Bands) Analysis</div>
+      <div id="bollChart" class="chart"></div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ff6b6b;"></div>
+          <span>Upper Band (Resistance)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #4ecdc4;"></div>
+          <span>Middle Band (MA20)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #95e1d3;"></div>
+          <span>Lower Band (Support)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ffffff;"></div>
+          <span>Candlestick</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">TAQ (Turtle Trading Channel) Analysis</div>
+      <div id="taqChart" class="chart"></div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ff6b6b;"></div>
+          <span>Channel Upper (Breakout Buy)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #feca57;"></div>
+          <span>Channel Middle</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #48dbfb;"></div>
+          <span>Channel Lower (Breakout Sell)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize charts
+    const bollChart = echarts.init(document.getElementById('bollChart'));
+    const taqChart = echarts.init(document.getElementById('taqChart'));
+
+    // Generate mock stock data (in real app, this would come from Ashare API)
+    function generateMockData(days = 60) {
+      const data = [];
+      const dates = [];
+      let basePrice = 3500;
+      
+      for (let i = 0; i < days; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - (days - i));
+        dates.push(date.toISOString().split('T')[0]);
+        
+        // Simulate price movement with trend
+        const trend = Math.sin(i / 10) * 100;
+        const noise = (Math.random() - 0.5) * 50;
+        const close = basePrice + trend + noise;
+        const open = close + (Math.random() - 0.5) * 30;
+        const high = Math.max(open, close) + Math.random() * 20;
+        const low = Math.min(open, close) - Math.random() * 20;
+        
+        data.push([open.toFixed(2), close.toFixed(2), low.toFixed(2), high.toFixed(2)]);
+      }
+      
+      return { dates, data };
+    }
+
+    // Calculate BOLL (Bollinger Bands)
+    function calculateBOLL(data, period = 20, multiplier = 2) {
+      const closes = data.map(d => parseFloat(d[1])); // close prices
+      const upper = [];
+      const middle = [];
+      const lower = [];
+      
+      for (let i = 0; i < closes.length; i++) {
+        if (i < period - 1) {
+          upper.push(null);
+          middle.push(null);
+          lower.push(null);
+        } else {
+          const slice = closes.slice(i - period + 1, i + 1);
+          const ma = slice.reduce((a, b) => a + b, 0) / period;
+          const variance = slice.reduce((sum, val) => sum + Math.pow(val - ma, 2), 0) / period;
+          const std = Math.sqrt(variance);
+          
+          middle.push(ma.toFixed(2));
+          upper.push((ma + multiplier * std).toFixed(2));
+          lower.push((ma - multiplier * std).toFixed(2));
+        }
+      }
+      
+      return { upper, middle, lower };
+    }
+
+    // Calculate TAQ (Turtle Trading Channel)
+    function calculateTAQ(highs, lows, period = 20) {
+      const up = [];
+      const mid = [];
+      const down = [];
+      
+      for (let i = 0; i < highs.length; i++) {
+        if (i < period - 1) {
+          up.push(null);
+          mid.push(null);
+          down.push(null);
+        } else {
+          const highSlice = highs.slice(i - period + 1, i + 1);
+          const lowSlice = lows.slice(i - period + 1, i + 1);
+          
+          const highest = Math.max(...highSlice);
+          const lowest = Math.min(...lowSlice);
+          const middle = (highest + lowest) / 2;
+          
+          up.push(highest.toFixed(2));
+          mid.push(middle.toFixed(2));
+          down.push(lowest.toFixed(2));
+        }
+      }
+      
+      return { up, mid, down };
+    }
+
+    // Update charts
+    function updateCharts() {
+      const period = parseInt(document.getElementById('period').value);
+      const multiplier = parseFloat(document.getElementById('bollMultiplier').value);
+      
+      const { dates, data } = generateMockData(period + 40);
+      const { upper, middle, lower } = calculateBOLL(data, period, multiplier);
+      
+      const highs = data.map(d => parseFloat(d[3]));
+      const lows = data.map(d => parseFloat(d[2]));
+      const { up: taqUp, mid: taqMid, down: taqDown } = calculateTAQ(highs, lows, period);
+
+      // BOLL Chart Configuration
+      const bollOption = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'cross' },
+          backgroundColor: 'rgba(22, 27, 34, 0.9)',
+          borderColor: '#30363d',
+          textStyle: { color: '#c9d1d9' }
+        },
+        legend: {
+          data: ['K线', 'Upper', 'Middle', 'Lower'],
+          textStyle: { color: '#8b949e' },
+          top: 10
+        },
+        grid: {
+          left: '3%',
+          right: '3%',
+          bottom: '10%',
+          top: '15%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: dates,
+          axisLine: { lineStyle: { color: '#30363d' } },
+          axisLabel: { color: '#8b949e' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#30363d' } },
+          axisLabel: { color: '#8b949e' },
+          splitLine: { lineStyle: { color: '#21262d' } }
+        },
+        dataZoom: [
+          {
+            type: 'inside',
+            start: 50,
+            end: 100
+          },
+          {
+            type: 'slider',
+            start: 50,
+            end: 100,
+            backgroundColor: '#161b22',
+            borderColor: '#30363d',
+            fillerColor: 'rgba(88, 166, 255, 0.2)',
+            handleStyle: { color: '#58a6ff' },
+            textStyle: { color: '#8b949e' }
+          }
+        ],
+        series: [
+          {
+            name: 'K线',
+            type: 'candlestick',
+            data: data,
+            itemStyle: {
+              color: '#ff6b6b',
+              color0: '#4ecdc4',
+              borderColor: '#ff6b6b',
+              borderColor0: '#4ecdc4'
+            }
+          },
+          {
+            name: 'Upper',
+            type: 'line',
+            data: upper,
+            smooth: true,
+            lineStyle: { color: '#ff6b6b', width: 2 },
+            symbol: 'none'
+          },
+          {
+            name: 'Middle',
+            type: 'line',
+            data: middle,
+            smooth: true,
+            lineStyle: { color: '#4ecdc4', width: 2 },
+            symbol: 'none'
+          },
+          {
+            name: 'Lower',
+            type: 'line',
+            data: lower,
+            smooth: true,
+            lineStyle: { color: '#95e1d3', width: 2 },
+            symbol: 'none'
+          }
+        ]
+      };
+
+      // TAQ Chart Configuration
+      const taqOption = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'cross' },
+          backgroundColor: 'rgba(22, 27, 34, 0.9)',
+          borderColor: '#30363d',
+          textStyle: { color: '#c9d1d9' }
+        },
+        legend: {
+          data: ['Price', 'Channel Upper', 'Channel Middle', 'Channel Lower'],
+          textStyle: { color: '#8b949e' },
+          top: 10
+        },
+        grid: {
+          left: '3%',
+          right: '3%',
+          bottom: '10%',
+          top: '15%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: dates,
+          axisLine: { lineStyle: { color: '#30363d' } },
+          axisLabel: { color: '#8b949e' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#30363d' } },
+          axisLabel: { color: '#8b949e' },
+          splitLine: { lineStyle: { color: '#21262d' } }
+        },
+        dataZoom: [
+          {
+            type: 'inside',
+            start: 50,
+            end: 100
+          },
+          {
+            type: 'slider',
+            start: 50,
+            end: 100,
+            backgroundColor: '#161b22',
+            borderColor: '#30363d',
+            fillerColor: 'rgba(88, 166, 255, 0.2)',
+            handleStyle: { color: '#58a6ff' },
+            textStyle: { color: '#8b949e' }
+          }
+        ],
+        series: [
+          {
+            name: 'Price',
+            type: 'line',
+            data: data.map(d => d[1]), // close prices
+            smooth: false,
+            lineStyle: { color: '#ffffff', width: 1.5 },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(255, 255, 255, 0.1)' },
+                { offset: 1, color: 'rgba(255, 255, 255, 0)' }
+              ])
+            },
+            symbol: 'none'
+          },
+          {
+            name: 'Channel Upper',
+            type: 'line',
+            data: taqUp,
+            smooth: true,
+            lineStyle: { color: '#ff6b6b', width: 2, type: 'dashed' },
+            symbol: 'none'
+          },
+          {
+            name: 'Channel Middle',
+            type: 'line',
+            data: taqMid,
+            smooth: true,
+            lineStyle: { color: '#feca57', width: 1.5 },
+            symbol: 'none'
+          },
+          {
+            name: 'Channel Lower',
+            type: 'line',
+            data: taqDown,
+            smooth: true,
+            lineStyle: { color: '#48dbfb', width: 2, type: 'dashed' },
+            symbol: 'none'
+          }
+        ]
+      };
+
+      bollChart.setOption(bollOption);
+      taqChart.setOption(taqOption);
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      bollChart.resize();
+      taqChart.resize();
+    });
+
+    // Initial render
+    updateCharts();
+  </script>
+</body>
+</html>
