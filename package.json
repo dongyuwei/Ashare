@@ -4,13 +4,19 @@
   "description": "TypeScript implementation of Ashare stock data API with technical indicators",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "dev": "ts-node Demo1.ts",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "stock",
@@ -18,10 +24,26 @@
     "technical-analysis",
     "quantitative",
     "a-share",
-    "typescript"
+    "typescript",
+    "stock-market",
+    "finance",
+    "charts",
+    "indicators",
+    "macd",
+    "bollinger-bands",
+    "kdj",
+    "rsi"
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dongyuwei/Ashare.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dongyuwei/Ashare/issues"
+  },
+  "homepage": "https://github.com/dongyuwei/Ashare/blob/main/README_TYPESCRIPT.md",
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
